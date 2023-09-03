@@ -1,8 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import counterReducer from './slices/counterSlice';
+import cartReducer from './slices/cartSlice';
+import productsReducer from './slices/productsSlice';
 
 const rootReducer = combineReducers({
-  counter: counterReducer,
+  cart: cartReducer,
+  products: productsReducer,
 });
 
 export default rootReducer;

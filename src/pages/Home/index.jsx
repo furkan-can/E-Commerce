@@ -1,14 +1,11 @@
 import { Header, Content } from "@/layout";
-// import { Button } from "@/components";
 // import { useSelector, useDispatch } from 'react-redux';
 // import { increment, decrement } from '@/store/slices/counterSlice';
-// import { useNavigate } from "react-router-dom";
 
 
 const Home = () => {
   // const counterValue = useSelector((state) => state.counter.value);
   // const dispatch = useDispatch();
-  // const navigate = useNavigate();
 
   return (
     <>

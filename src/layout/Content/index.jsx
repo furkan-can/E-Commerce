@@ -1,7 +1,11 @@
-import { Card, RadioButton, Title, CheckButton, SearchBar, CartItem, Product, Pagination, Button } from "@/components"
+import { Card, RadioButton, Title, CheckButton, SearchBar, CartItem, Product, Pagination, Button, TotalPrice } from "@/components"
 import { sortOptions } from "@/utils/constant";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useSelector, useDispatch } from 'react-redux';
+import { addProductToCart } from '@/store/slices/cartSlice';
+import { setAllProducts } from '@/store/slices/productsSlice';
+
 
 const Content = () => {
   const navigate = useNavigate();
@@ -12,26 +16,44 @@ const Content = () => {
 
   const allProducts = [
     {
+      id: 0,
       url: "",
       title: "Samsung S22",
       price: "10.000",
     },
     {
+      id: 1,
       url: "",
       title: "Samsung S22",
       price: "10.000",
     },
     {
+      id: 2,
       url: "",
       title: "Samsung S22",
       price: "10.000",
     },
     {
+      id: 3,
       url: "",
       title: "Samsung S22",
       price: "10.000",
     },
   ];
+
+  useEffect(() => {
+    dispatch(setAllProducts(allProducts));
+  }, []);
+
+  const allProductsStore = useSelector((state) => state.products.allProducts);
+  const productsInCart = useSelector(state => state.cart.productsInCart);
+  const dispatch = useDispatch();
+
+  const handleAddToCart = (e, id) => {
+    const product = allProductsStore.find((product) => product.id === id);
+    dispatch(addProductToCart(product));
+    e.stopPropagation();
+  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
@@ -41,9 +63,9 @@ const Content = () => {
     return items.slice(startIndex, startIndex + pageSize);
   };
 
-  const currentProducts = paginate(allProducts, currentPage, productsPerPage);
+  const currentProducts = paginate(allProductsStore, currentPage, productsPerPage);
 
-  const totalPageCount = Math.ceil(allProducts.length / productsPerPage);
+  const totalPageCount = Math.ceil(allProductsStore.length / productsPerPage);
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -87,10 +109,7 @@ const Content = () => {
     setModelsCheckButtonsChecked({ ...modelsCheckButtonsChecked, [name]: checked });
   };
 
-  const handleAddToCart = (e, index) => {
-    console.log("add to cart", allProducts.at(index));
-    e.stopPropagation();
-  };
+
 
   return (
     <div className="grid grid-cols-5 h-screen2 px-60 pt-8 bg-gray-100">
@@ -139,7 +158,7 @@ const Content = () => {
       <div className="col-span-3 relative">
         <div className="flex flex-wrap -mx-2 gap-y-5">
           {currentProducts.map((product, index) => (
-            <div onClick={() => handleProductClick(index)} className="w-1/4 px-2 cursor-pointer" key={index}>
+            <div onClick={() => handleProductClick(product.id)} className="w-1/4 px-2 cursor-pointer" key={index}>
               <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
                 <Product
                   url={product.url}
@@ -147,7 +166,7 @@ const Content = () => {
                   title={product.title}
                 />
                 {/* <button onClick={(e,index) =>handleAddToCart(e,index)} className="w-full bg-blue-600 text-white rounded h-8">Add to Cart</button> */}
-                <Button title={"Add to Cart"} handleClick={(e, index) => handleAddToCart(e, index)} />
+                <Button title={"Add to Cart"} handleClick={(e) => handleAddToCart(e, product.id)} />
               </div>
             </div>
           ))}
@@ -166,14 +185,23 @@ const Content = () => {
         <div>
           <Title title="Cart" />
           <Card height={"h-36"} width={"w-64"}>
-            <CartItem title={"Samsung S22"} price={"10.000"} />
+            {
+              productsInCart.map((product, index) => (
+                <CartItem
+                  key={index}
+                  id={product.id}
+                  price={product.price}
+                  title={product.title}
+                  quantity={product.quantity}
+                />
+              ))
+            }
           </Card>
         </div>
         <div>
           <Title title="Checkout" />
           <Card height={"h-24"} width={"w-64"}>
-            <span>Total Price: <span className="text-blue-600 font-semibold">10.000<span className="text-blue-600 font-semibold">₺</span></span></span>
-            {/* <button className="w-full h-8 text-white bg-blue-600 rounded">Checkout</button> */}
+            <TotalPrice />
             <Button title={"Checkout"} handleClick={() => { }} />
           </Card>
         </div>

@@ -1,13 +1,17 @@
 import { useParams } from 'react-router-dom';
-import { Card, Title, CartItem, Button } from "@/components"
-
+import { Card, Title, CartItem, Button, TotalPrice } from "@/components"
+import { useSelector, useDispatch } from 'react-redux';
+import { addProductToCart } from '@/store/slices/cartSlice';
 import { Header } from "@/layout";
 
 const ProductDetails = () => {
     const { id } = useParams();
-    const handleAddToCart = (e) => {
-        console.log("add to cart", id);
-        e.stopPropagation();
+    const productsInCart = useSelector(state => state.cart.productsInCart);
+    const allProducts = useSelector((state) => state.products.allProducts);
+    const dispatch = useDispatch();
+    const handleAddToCart = () => {
+        const product = allProducts.find((product) => product.id === parseInt(id));
+        dispatch(addProductToCart(product));
     };
     return (
         <>
@@ -23,7 +27,7 @@ const ProductDetails = () => {
                                 <span className="text-2xl">iPhone 11 Pro Max</span>
                                 <br />
                                 <span className="text-blue-600 text-xl">10.000<span className="text-blue-600 text-xl">₺</span></span>
-                                <Button optionalClassName={"mt-16"} title={"Add to Cart"} handleClick={(e) => handleAddToCart(e)} />
+                                <Button optionalClassName={"mt-16"} title={"Add to Cart"} handleClick={() => handleAddToCart()} />
                                 <p className='mt-7'>
                                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias dolore ad laudantium cumque dicta. Cumque eveniet dolor officiis inventore culpa maiores commodi sint, repellendus eaque nam expedita nobis nemo laboriosam. Blanditiis repellendus voluptate cumque porro modi animi iste temporibus incidunt, dolorum tempore non quae libero adipisci laboriosam odio in vero, vel repellat nam tenetur, eos inventore consequuntur? Quisquam unde repudiandae beatae iusto facilis? Ut quam, fuga eius officiis placeat voluptatibus! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid obcaecati reiciendis odit nesciunt enim laudantium. Ut fuga voluptatibus nesciunt aperiam.
                                 </p>
@@ -35,13 +39,23 @@ const ProductDetails = () => {
                     <div>
                         <Title title="Cart" />
                         <Card height={"h-36"} width={"w-64"}>
-                            <CartItem title={"Samsung S22"} price={"10.000"} />
+                            {
+                                productsInCart.map((product, index) => (
+                                    <CartItem
+                                        key={index}
+                                        id={product.id}
+                                        price={product.price}
+                                        title={product.title}
+                                        quantity={product.quantity}
+                                    />
+                                ))
+                            }
                         </Card>
                     </div>
                     <div>
                         <Title title="Checkout" />
                         <Card height={"h-24"} width={"w-64"}>
-                            <span>Total Price: <span className="text-blue-600 font-semibold">10.000<span className="text-blue-600 font-semibold">₺</span></span></span>
+                            <TotalPrice />
                             <Button title={"Checkout"} handleClick={() => { }} />
                         </Card>
                     </div>
