@@ -8,6 +8,8 @@ import { setAllProducts } from '@/store/slices/productsSlice';
 import { setAllbrands } from '@/store/slices/brandSlice';
 import { setAllmodels } from '@/store/slices/modelSlice';
 import { fetchProductData } from '@/services/dataServices';
+import { setFilteredProducts, clearFilterProduct } from '@/store/slices/productsSlice';
+
 
 
 const Content = () => {
@@ -24,19 +26,19 @@ const Content = () => {
         console.log(data);
         if (data) {
           dispatch(setAllProducts(data));
-          const brands = data.map((product, index) => {
+          const brands = data.map((product) => {
             return {
               id: product.id,
               text: product.brand,
-              name: `brand${index + 1}`,
+              name: product.brand,
             };
           });
           dispatch(setAllbrands(brands));
-          const models = data.map((product, index) => {
+          const models = data.map((product) => {
             return {
               id: product.id,
               text: product.model,
-              name: `model${index + 1}`,
+              name: product.model,
             };
           });
           dispatch(setAllmodels(models));
@@ -80,7 +82,12 @@ const Content = () => {
     return items.slice(startIndex, startIndex + pageSize);
   };
 
-  let currentProducts = paginate(allProductsStore, currentPage, productsPerPage);
+  const [currentProducts, setCurrentProducts] = useState([]);
+
+  useEffect(() => {
+    setCurrentProducts(paginate(allProductsStore, currentPage, productsPerPage));
+  }, [currentPage, allProductsStore]);
+
 
   let totalPageCount = Math.ceil(allProductsStore.length / productsPerPage);
 
@@ -99,10 +106,26 @@ const Content = () => {
   };
 
 
-  const [selectedOption, setSelectedOption] = useState('');
+
+  const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
+    if (event.target.value === sortOptions[0].value) {
+      setCurrentProducts(currentProducts.slice().sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+    }
+
+    if (event.target.value === sortOptions[3].value) {
+      setCurrentProducts(currentProducts.slice().sort((a, b) => a.price - b.price));
+    }
+    if (event.target.value === sortOptions[2].value) {
+      setCurrentProducts(currentProducts.slice().sort((a, b) => b.price - a.price));
+
+    }
+    if (event.target.value === sortOptions[1].value) {
+      setCurrentProducts(currentProducts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+    }
+
   };
 
   const [brandsCheckButtonsChecked, setBrandsCheckButtonsChecked] = useState({});
@@ -114,16 +137,34 @@ const Content = () => {
 
   useEffect(() => {
     const newBrandsCheckButtonsChecked = {};
-    for (let i = 1; i <= brandsCount; i++) {
-      newBrandsCheckButtonsChecked[`brand${i}`] = false;
-    }
+    allBrandsStore.forEach((brand) => {
+      newBrandsCheckButtonsChecked[brand.name] = false;
+    });
     setBrandsCheckButtonsChecked(newBrandsCheckButtonsChecked);
-  }, [brandsCount]);
+  }, [brandsCount, allBrandsStore]);
+
+  useEffect(() => {
+    const selectedBrands = Object.keys(brandsCheckButtonsChecked).filter((brandName) => brandsCheckButtonsChecked[brandName]);
+
+    if (selectedBrands.length > 0) {
+      const filterProduct = getFilteredProductsByBrands();
+      dispatch(setFilteredProducts(filterProduct));
+    } else {
+      dispatch(clearFilterProduct());
+    }
+  }, [brandsCheckButtonsChecked]);
+
+  const getFilteredProductsByBrands = () => {
+    const selectedBrands = Object.keys(brandsCheckButtonsChecked).filter((brandName) => brandsCheckButtonsChecked[brandName]);
+    return allProductsStore.filter((product) => selectedBrands.includes(product.brand));
+  };
 
   const handleBrandsCheckButtonChange = (event) => {
     const { name, checked } = event.target;
-    setBrandsCheckButtonsChecked({ ...brandsCheckButtonsChecked, [name]: checked });
-
+    setBrandsCheckButtonsChecked((prevCheckButtons) => ({
+      ...prevCheckButtons,
+      [name]: checked,
+    }));
   };
 
   const [modelsCheckButtonsChecked, setModelsCheckButtonsChecked] = useState({});
@@ -135,15 +176,34 @@ const Content = () => {
 
   useEffect(() => {
     const newModelsCheckButtonsChecked = {};
-    for (let i = 1; i <= modelsCount; i++) {
-      newModelsCheckButtonsChecked[`model${i}`] = false;
-    }
+    allModelsStore.forEach((model) => {
+      newModelsCheckButtonsChecked[model.name] = false;
+    });
     setModelsCheckButtonsChecked(newModelsCheckButtonsChecked);
-  }, [modelsCount]);
+  }, [modelsCount, allModelsStore]);
+
+  useEffect(() => {
+    const selectedModels = Object.keys(modelsCheckButtonsChecked).filter((modelName) => modelsCheckButtonsChecked[modelName]);
+
+    if (selectedModels.length > 0) {
+      const filterProduct = getFilteredProductsByModels();
+      dispatch(setFilteredProducts(filterProduct));
+    } else {
+      dispatch(clearFilterProduct());
+    }
+  }, [modelsCheckButtonsChecked]);
+
+  const getFilteredProductsByModels = () => {
+    const selectedModels = Object.keys(modelsCheckButtonsChecked).filter((modelName) => modelsCheckButtonsChecked[modelName]);
+    return allProductsStore.filter((product) => selectedModels.includes(product.model));
+  };
 
   const handleModelsCheckButtonChange = (event) => {
     const { name, checked } = event.target;
-    setModelsCheckButtonsChecked({ ...modelsCheckButtonsChecked, [name]: checked });
+    setModelsCheckButtonsChecked((prevCheckButtons) => ({
+      ...prevCheckButtons,
+      [name]: checked,
+    }));
   };
 
   return (
