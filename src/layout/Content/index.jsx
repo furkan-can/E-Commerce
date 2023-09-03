@@ -1,6 +1,5 @@
-import { Card, RadioButton, Title, CheckButton, SearchBar, CartItem, Product } from "@/components"
+import { Card, RadioButton, Title, CheckButton, SearchBar, CartItem, Product, Pagination } from "@/components"
 import { sortOptions } from "@/utils/constant";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai"
 import { useState } from "react";
 
 const Content = () => {
@@ -25,8 +24,6 @@ const Content = () => {
       title: "Samsung S22",
       price: "10.000",
     },
-    
-
   ];
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
@@ -52,11 +49,6 @@ const Content = () => {
       setCurrentPage((prev) => prev - 1);
     }
   };
-
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPageCount; i++) {
-    pageNumbers.push(i);
-  }
 
 
   const [selectedOption, setSelectedOption] = useState('');
@@ -146,95 +138,13 @@ const Content = () => {
           ))}
         </div>
         <div className="col-span-3 flex left-1/2 -translate-x-1/2 h-5 items-center absolute bottom-10">
-          <button onClick={handlePrevPageChange} className="group text-gray-600 self-center items-center">
-            <AiOutlineLeft />
-          </button>
-          {pageNumbers.length > 4 ? (
-            <>
-              {currentPage === 1 ? (
-                <>
-                  {pageNumbers.slice(0, 3).map((pageNumber) => (
-                    <button
-                      key={pageNumber}
-                      className={`mx-2 rounded-lg h-8 w-8 items-center self-center ${pageNumber === currentPage ? "bg-white text-blue-600" : "text-gray-600"
-                        }`}
-                      onClick={() => handlePageChange(pageNumber)}
-                    >
-                      {pageNumber}
-                    </button>
-                  ))}
-                  <span className="mx-2">...</span>
-                  <button
-                    className={`mx-2 rounded-lg h-8 w-8 items-center self-center text-gray-600`}
-                    onClick={() => handlePageChange(totalPageCount)}
-                  >
-                    {totalPageCount}
-                  </button>
-                </>
-              ) : currentPage === totalPageCount ? (
-                <>
-                  <button
-                    className={`mx-2 rounded-lg h-8 w-8 items-center self-center text-gray-600`}
-                    onClick={() => handlePageChange(1)}
-                  >
-                    {1}
-                  </button>
-                  <span className="mx-2">...</span>
-                  {pageNumbers.slice(-3).map((pageNumber) => (
-                    <button
-                      key={pageNumber}
-                      className={`mx-2 rounded-lg h-8 w-8 items-center self-center ${pageNumber === currentPage ? "bg-white text-blue-600" : "text-gray-600"
-                        }`}
-                      onClick={() => handlePageChange(pageNumber)}
-                    >
-                      {pageNumber}
-                    </button>
-                  ))}
-                </>
-              ) : (
-                <>
-                  <button
-                    className={`mx-2 rounded-lg h-8 w-8 items-center ${totalPageCount-currentPage <= 2 ? "block" : "hidden"} self-center text-gray-600`}
-                    onClick={() => handlePageChange(currentPage-2)}
-                  >
-                    {currentPage-2}
-                  </button>
-                  {pageNumbers.slice(currentPage - 2, currentPage + 1).map((pageNumber) => (
-                    <button
-                      key={pageNumber}
-                      className={`mx-2 rounded-lg h-8 w-8 items-center self-center ${pageNumber === currentPage ? "bg-white text-blue-600" : "text-gray-600"
-                        }`}
-                      onClick={() => handlePageChange(pageNumber)}
-                    >
-                      {pageNumber}
-                    </button>
-                  ))}
-                  <span className={`mx-2 ${totalPageCount - currentPage <= 2 ? "hidden" : "block"}`}>...</span>
-                  <button
-                    className={`mx-2 rounded-lg h-8 w-8 items-center ${totalPageCount - currentPage <= 2 ? "hidden" : "block"} self-center text-gray-600`}
-                    onClick={() => handlePageChange(totalPageCount)}
-                  >
-                    {totalPageCount}
-                  </button>
-
-                </>
-              )}
-            </>
-          ) : (
-            pageNumbers.map((pageNumber) => (
-              <button
-                key={pageNumber}
-                className={`mx-2 rounded-lg h-8 w-8 items-center self-center ${pageNumber === currentPage ? "bg-white text-blue-600" : "text-gray-600"
-                  }`}
-                onClick={() => handlePageChange(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))
-          )}
-          <button onClick={handleNextPageChange} className="group text-gray-600">
-            <AiOutlineRight />
-          </button>
+          <Pagination
+            currentPage={currentPage}
+            totalPageCount={totalPageCount}
+            handlePageChange={handlePageChange}
+            handleNextPageChange={handleNextPageChange}
+            handlePrevPageChange={handlePrevPageChange}
+          />
         </div>
       </div>
       <div className="col-span-1 flex flex-col gap-5 ml-4">
