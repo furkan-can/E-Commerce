@@ -6,3 +6,4 @@ export { default as SearchBar } from "./SearchBar";
 export { default as CartItem } from "./CartItem";
 export { default as Product } from "./Product";
 export { default as Pagination } from "./Pagination";
+export { default as Button } from "./Button";

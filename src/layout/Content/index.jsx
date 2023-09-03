@@ -1,8 +1,15 @@
-import { Card, RadioButton, Title, CheckButton, SearchBar, CartItem, Product, Pagination } from "@/components"
+import { Card, RadioButton, Title, CheckButton, SearchBar, CartItem, Product, Pagination, Button } from "@/components"
 import { sortOptions } from "@/utils/constant";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 const Content = () => {
+  const navigate = useNavigate();
+
+  const handleProductClick = (id) => {
+    navigate(`/product/${id}`);
+  };
+
   const allProducts = [
     {
       url: "",
@@ -25,6 +32,7 @@ const Content = () => {
       price: "10.000",
     },
   ];
+
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
 
@@ -79,7 +87,10 @@ const Content = () => {
     setModelsCheckButtonsChecked({ ...modelsCheckButtonsChecked, [name]: checked });
   };
 
-
+  const handleAddToCart = (e, index) => {
+    console.log("add to cart", allProducts.at(index));
+    e.stopPropagation();
+  };
 
   return (
     <div className="grid grid-cols-5 h-screen2 px-60 pt-8 bg-gray-100">
@@ -128,12 +139,16 @@ const Content = () => {
       <div className="col-span-3 relative">
         <div className="flex flex-wrap -mx-2 gap-y-5">
           {currentProducts.map((product, index) => (
-            <div className="w-1/4 px-2" key={index}>
-              <Product
-                url={product.url}
-                price={product.price}
-                title={product.title}
-              />
+            <div onClick={() => handleProductClick(index)} className="w-1/4 px-2 cursor-pointer" key={index}>
+              <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
+                <Product
+                  url={product.url}
+                  price={product.price}
+                  title={product.title}
+                />
+                {/* <button onClick={(e,index) =>handleAddToCart(e,index)} className="w-full bg-blue-600 text-white rounded h-8">Add to Cart</button> */}
+                <Button title={"Add to Cart"} handleClick={(e, index) => handleAddToCart(e, index)} />
+              </div>
             </div>
           ))}
         </div>
@@ -158,7 +173,8 @@ const Content = () => {
           <Title title="Checkout" />
           <Card height={"h-24"} width={"w-64"}>
             <span>Total Price: <span className="text-blue-600 font-semibold">10.000<span className="text-blue-600 font-semibold">₺</span></span></span>
-            <button className="w-full h-10 text-white bg-blue-600 rounded">Checkout</button>
+            {/* <button className="w-full h-8 text-white bg-blue-600 rounded">Checkout</button> */}
+            <Button title={"Checkout"} handleClick={() => { }} />
           </Card>
         </div>
       </div>
