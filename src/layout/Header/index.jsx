@@ -7,7 +7,7 @@ const Header = () => {
     <div className="flex items-center justify-between w-full h-12 bg-blue-600 px-60">
       <div className="flex items-center gap-40">
         <span className='text-white font-bold text-2xl'>Eteration</span>
-        <SearchBar width={"w-80"} height={"h-10"} />
+        <SearchBar searchType={"product"} width={"w-80"} height={"h-10"} />
       </div>
       <div className='flex items-center text-white gap-10'>
         <div className='flex items-center gap-2'>
