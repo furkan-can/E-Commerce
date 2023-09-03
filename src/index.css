@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/*Google Chrome, Safari (Webkit tabanlı tarayıcılar)*/
+::-webkit-scrollbar {
+  width: 5px; /* Scroll çubuğu genişliği */
+}
+::-webkit-scrollbar-track {
+  background-color: #fff; /* Scroll yolu rengi */
+}
+::-webkit-scrollbar-thumb {
+  background-color: #CCC; /* Scroll çubuğu rengi */
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #AAA; /* Scroll çubuğu hover rengi */
+}
+
+
+/*Firefox (Gecko tabanlı tarayıcılar)*/
+scrollbar {
+  width: 5px; /* Scroll çubuğu genişliği */
+}
+scrollbar-track {
+  background-color: #fff; /* Scroll yolu rengi */
+}
+scrollbar-thumb {
+  background-color: #CCC; /* Scroll çubuğu rengi */
+}
+scrollbar-thumb:hover {
+  background-color: #AAA; /* Scroll çubuğu hover rengi */
+}
+
+
+/*Internet Explorer Microsoft Edge*/
+::-ms-scrollbar {
+  width: 5px; /* Scroll çubuğu genişliği */
+}
+::-ms-thumb {
+  background-color: #CCC; /* Scroll çubuğu rengi */
+}
+::-ms-thumb:hover {
+  background-color: #AAA; /* Scroll çubuğu hover rengi */
+}
+
