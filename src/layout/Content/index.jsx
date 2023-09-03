@@ -7,6 +7,7 @@ import { addProductToCart } from '@/store/slices/cartSlice';
 import { setAllProducts } from '@/store/slices/productsSlice';
 import { setAllbrands } from '@/store/slices/brandSlice';
 import { setAllmodels } from '@/store/slices/modelSlice';
+import { fetchProductData } from '@/services/dataServices';
 
 
 const Content = () => {
@@ -16,76 +17,40 @@ const Content = () => {
     navigate(`/product/${id}`);
   };
 
-  const allProducts = [
-    {
-      id: 0,
-      url: "",
-      title: "Samsung S22",
-      price: "10.000",
-    },
-    {
-      id: 1,
-      url: "",
-      title: "iPhone S22",
-      price: "10.000",
-    },
-    {
-      id: 2,
-      url: "",
-      title: "Huawei S22",
-      price: "10.000",
-    },
-    {
-      id: 3,
-      url: "",
-      title: "Oppo S22",
-      price: "10.000",
-    },
-  ];
-
-  const allBrands = [
-    {
-      id: 0,
-      text: "Samsung",
-      name: "checkbutton1",
-    },
-    {
-      id: 1,
-      text: "iPhone",
-      name: "checkbutton2",
-    },
-    {
-      id: 2,
-      text: "Huawei",
-      name: "checkbutton3",
-    },
-  ];
-
-  const allModels = [
-    {
-      id: 0,
-      text: "11",
-      name: "checkbutton1",
-    },
-    {
-      id: 1,
-      text: "12",
-      name: "checkbutton2",
-    },
-    {
-      id: 2,
-      text: "13",
-      name: "checkbutton3",
-    },
-  ];
-
-
-
   useEffect(() => {
-    dispatch(setAllProducts(allProducts));
-    dispatch(setAllbrands(allBrands));
-    dispatch(setAllmodels(allModels));
+    async function fetchData() {
+      try {
+        const data = await fetchProductData();
+        console.log(data);
+        if (data) {
+          dispatch(setAllProducts(data));
+          const brands = data.map((product, index) => {
+            return {
+              id: product.id,
+              text: product.brand,
+              name: `brand${index + 1}`,
+            };
+          });
+          dispatch(setAllbrands(brands));
+          const models = data.map((product, index) => {
+            return {
+              id: product.id,
+              text: product.model,
+              name: `model${index + 1}`,
+            };
+          });
+          dispatch(setAllmodels(models));
+        } else {
+          console.error('Error fetching product data');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    fetchData();
   }, []);
+
 
   const allModelsStore = useSelector((state) => state.models.allmodels);
   const isFilterActiveModel = useSelector((state) => state.models.isFilterActive);
@@ -115,9 +80,10 @@ const Content = () => {
     return items.slice(startIndex, startIndex + pageSize);
   };
 
-  const currentProducts = paginate(allProductsStore, currentPage, productsPerPage);
+  let currentProducts = paginate(allProductsStore, currentPage, productsPerPage);
 
-  const totalPageCount = Math.ceil(allProductsStore.length / productsPerPage);
+  let totalPageCount = Math.ceil(allProductsStore.length / productsPerPage);
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -139,22 +105,41 @@ const Content = () => {
     setSelectedOption(event.target.value);
   };
 
-  const [brandsCheckButtonsChecked, setBrandsCheckButtonsChecked] = useState({
-    checkbutton1: false,
-    checkbutton2: false,
-    checkbutton3: false,
-  });
+  const [brandsCheckButtonsChecked, setBrandsCheckButtonsChecked] = useState({});
+  const [brandsCount, setBrandsCount] = useState(0);
+
+  useEffect(() => {
+    setBrandsCount(allBrandsStore.length);
+  }, [allBrandsStore]);
+
+  useEffect(() => {
+    const newBrandsCheckButtonsChecked = {};
+    for (let i = 1; i <= brandsCount; i++) {
+      newBrandsCheckButtonsChecked[`brand${i}`] = false;
+    }
+    setBrandsCheckButtonsChecked(newBrandsCheckButtonsChecked);
+  }, [brandsCount]);
 
   const handleBrandsCheckButtonChange = (event) => {
     const { name, checked } = event.target;
     setBrandsCheckButtonsChecked({ ...brandsCheckButtonsChecked, [name]: checked });
+
   };
 
-  const [modelsCheckButtonsChecked, setModelsCheckButtonsChecked] = useState({
-    checkbutton1: false,
-    checkbutton2: false,
-    checkbutton3: false,
-  });
+  const [modelsCheckButtonsChecked, setModelsCheckButtonsChecked] = useState({});
+  const [modelsCount, setModelsCount] = useState(0);
+
+  useEffect(() => {
+    setModelsCount(allModelsStore.length);
+  }, [allModelsStore]);
+
+  useEffect(() => {
+    const newModelsCheckButtonsChecked = {};
+    for (let i = 1; i <= modelsCount; i++) {
+      newModelsCheckButtonsChecked[`model${i}`] = false;
+    }
+    setModelsCheckButtonsChecked(newModelsCheckButtonsChecked);
+  }, [modelsCount]);
 
   const handleModelsCheckButtonChange = (event) => {
     const { name, checked } = event.target;
@@ -190,17 +175,20 @@ const Content = () => {
                   key={index}
                   text={brand.text}
                   name={brand.name}
-                  checked={brandsCheckButtonsChecked[brand.name]}
-                  onChange={handleBrandsCheckButtonChange}
+                  value={brandsCheckButtonsChecked[brand.name]}
+                  checked={brandsCheckButtonsChecked[brand.name] || false}
+                  onChange={(e) => handleBrandsCheckButtonChange(e)}
                 />
+
               )) :
                 allBrandsStore.map((brand, index) => (
                   <CheckButton
                     key={index}
                     text={brand.text}
                     name={brand.name}
-                    checked={brandsCheckButtonsChecked[brand.name]}
-                    onChange={handleBrandsCheckButtonChange}
+                    value={brandsCheckButtonsChecked[brand.name]}
+                    checked={brandsCheckButtonsChecked[brand.name] || false}
+                    onChange={(e) => handleBrandsCheckButtonChange(e)}
                   />
                 ))
             }
@@ -216,8 +204,9 @@ const Content = () => {
                   key={index}
                   text={model.text}
                   name={model.name}
-                  checked={modelsCheckButtonsChecked[model.name]}
-                  onChange={handleModelsCheckButtonChange}
+                  value={modelsCheckButtonsChecked[model.name]}
+                  checked={modelsCheckButtonsChecked[model.name] || false}
+                  onChange={(e) => handleModelsCheckButtonChange(e)}
                 />
               )) :
                 allModelsStore.map((model, index) => (
@@ -225,8 +214,9 @@ const Content = () => {
                     key={index}
                     text={model.text}
                     name={model.name}
-                    checked={modelsCheckButtonsChecked[model.name]}
-                    onChange={handleModelsCheckButtonChange}
+                    value={modelsCheckButtonsChecked[model.name]}
+                    checked={modelsCheckButtonsChecked[model.name] || false}
+                    onChange={(e) => handleModelsCheckButtonChange(e)}
                   />
                 ))
             }
@@ -240,11 +230,10 @@ const Content = () => {
               <div onClick={() => handleProductClick(product.id)} className="w-1/4 px-2 cursor-pointer" key={index}>
                 <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
                   <Product
-                    url={product.url}
+                    url={product.image}
                     price={product.price}
-                    title={product.title}
+                    title={product.name}
                   />
-                  {/* <button onClick={(e,index) =>handleAddToCart(e,index)} className="w-full bg-blue-600 text-white rounded h-8">Add to Cart</button> */}
                   <Button title={"Add to Cart"} handleClick={(e) => handleAddToCart(e, product.id)} />
                 </div>
               </div>
@@ -252,11 +241,10 @@ const Content = () => {
               <div onClick={() => handleProductClick(product.id)} className="w-1/4 px-2 cursor-pointer" key={index}>
                 <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
                   <Product
-                    url={product.url}
+                    url={product.image}
                     price={product.price}
-                    title={product.title}
+                    title={product.name}
                   />
-                  {/* <button onClick={(e,index) =>handleAddToCart(e,index)} className="w-full bg-blue-600 text-white rounded h-8">Add to Cart</button> */}
                   <Button title={"Add to Cart"} handleClick={(e) => handleAddToCart(e, product.id)} />
                 </div>
               </div>
@@ -283,7 +271,7 @@ const Content = () => {
                   key={index}
                   id={product.id}
                   price={product.price}
-                  title={product.title}
+                  title={product.name}
                   quantity={product.quantity}
                 />
               ))

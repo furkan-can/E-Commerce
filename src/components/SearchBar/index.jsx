@@ -7,12 +7,12 @@ import { setFilteredmodels, clearFilterModel } from '@/store/slices/modelSlice';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-const SearchBar = ({ width, height, optionalClassName, searchType }) => {
+const SearchBar = ({ width, height, optionalClassName, searchType,searchItem }) => {
     const dispatch = useDispatch();
     const allProductsStore = useSelector((state) => state.products.allProducts);
     const allBrandsStore = useSelector((state) => state.brands.allbrands);
     const allModelsStore = useSelector((state) => state.models.allmodels);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState(searchItem);
 
 
     const handleInputChange = (e) => {
@@ -28,12 +28,12 @@ const SearchBar = ({ width, height, optionalClassName, searchType }) => {
     }
 
     const productSearch = (value) => {
-        if (value === "") {
+        if (value === "" || value === undefined || value === null || value.trim() === "") {
             dispatch(clearFilterProduct());
             return;
         }
         const filterProducts = allProductsStore.filter((product) => {
-            return product.title.toLowerCase().includes(value.toLowerCase());
+            return product.name.toLowerCase().includes(value.toLowerCase());
         })
         dispatch(setFilteredProducts(filterProducts));
     }
@@ -77,7 +77,8 @@ SearchBar.propTypes = {
     width: PropTypes.string,
     height: PropTypes.string,
     optionalClassName: PropTypes.string,
-    searchType: PropTypes.string
+    searchType: PropTypes.string,
+    searchItem: PropTypes.string
 }
 
 export default SearchBar

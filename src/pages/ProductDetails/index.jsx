@@ -9,8 +9,8 @@ const ProductDetails = () => {
     const productsInCart = useSelector(state => state.cart.productsInCart);
     const allProducts = useSelector((state) => state.products.allProducts);
     const dispatch = useDispatch();
+    const product = allProducts.find((product) => product.id == parseInt(id));
     const handleAddToCart = () => {
-        const product = allProducts.find((product) => product.id === parseInt(id));
         dispatch(addProductToCart(product));
     };
     return (
@@ -21,15 +21,15 @@ const ProductDetails = () => {
                     <Card width={"w-full"}>
                         <div className='grid grid-cols-2 gap-10'>
                             <div className='col-span-1 w-full h-[30rem]'>
-                                <img src="https://picsum.photos/200/300" alt="product" className="w-full h-full" />
+                                <img src={product.image} alt={product.name} className="w-full h-full" />
                             </div>
                             <div className='col-span-1'>
-                                <span className="text-2xl">iPhone 11 Pro Max</span>
+                                <span className="text-2xl">{product.name}</span>
                                 <br />
-                                <span className="text-blue-600 text-xl">10.000<span className="text-blue-600 text-xl">₺</span></span>
+                                <span className="text-blue-600 text-xl">{product.price}<span className="text-blue-600 text-xl">₺</span></span>
                                 <Button optionalClassName={"mt-16"} title={"Add to Cart"} handleClick={() => handleAddToCart()} />
                                 <p className='mt-7'>
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias dolore ad laudantium cumque dicta. Cumque eveniet dolor officiis inventore culpa maiores commodi sint, repellendus eaque nam expedita nobis nemo laboriosam. Blanditiis repellendus voluptate cumque porro modi animi iste temporibus incidunt, dolorum tempore non quae libero adipisci laboriosam odio in vero, vel repellat nam tenetur, eos inventore consequuntur? Quisquam unde repudiandae beatae iusto facilis? Ut quam, fuga eius officiis placeat voluptatibus! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid obcaecati reiciendis odit nesciunt enim laudantium. Ut fuga voluptatibus nesciunt aperiam.
+                                    {product.description}
                                 </p>
                             </div>
                         </div>
@@ -45,7 +45,7 @@ const ProductDetails = () => {
                                         key={index}
                                         id={product.id}
                                         price={product.price}
-                                        title={product.title}
+                                        title={product.name}
                                         quantity={product.quantity}
                                     />
                                 ))

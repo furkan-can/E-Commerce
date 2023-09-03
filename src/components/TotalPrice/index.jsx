@@ -8,8 +8,8 @@ const TotalPrice = () => {
     const calculateTotalPrice = () => {
         let price = 0;
         productsInCart.map((product) => {
-            const priceWithoutSpecialCharacters = parseFloat(product.price.replace(".", "").replace(",", "."));
-            price += priceWithoutSpecialCharacters * product.quantity;
+            // const priceWithoutSpecialCharacters = parseFloat(product.price.replace(".", "").replace(",", "."));
+            price += product.price * product.quantity;
         });
         return price;
     }
