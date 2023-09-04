@@ -16,10 +16,10 @@ const ProductDetails = () => {
     return (
         <>
             <Header />
-            <div className="grid grid-cols-5 bg-gray-100 h-screen2 px-60 pt-8">
+            <div className="xl:grid xl:grid-cols-5 bg-gray-100 h-screen2 xl:px-3 md:px-6 pt-8 2xl:px-60">
                 <div className='col-span-4'>
                     <Card width={"w-full"}>
-                        <div className='grid grid-cols-2 gap-10'>
+                        <div className='xl:grid xl:grid-cols-2 gap-10'>
                             <div className='col-span-1 w-full h-[30rem]'>
                                 <img src={product.image} alt={product.name} className="w-full h-full" />
                             </div>
@@ -35,7 +35,7 @@ const ProductDetails = () => {
                         </div>
                     </Card>
                 </div>
-                <div className='col-span-1 flex flex-col gap-5 ml-4'>
+                <div className='col-span-1 flex flex-col gap-5 xl:ml-1 2xl:ml-4'>
                     <div>
                         <Title title="Cart" />
                         <Card height={"h-36"} width={"w-64"}>

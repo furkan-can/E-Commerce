@@ -8,3 +8,4 @@ export { default as Product } from "./Product";
 export { default as Pagination } from "./Pagination";
 export { default as Button } from "./Button";
 export { default as TotalPrice } from "./TotalPrice";
+export { default as Filters } from "./Filters";

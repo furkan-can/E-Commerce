@@ -7,7 +7,7 @@ import { setFilteredmodels, clearFilterModel } from '@/store/slices/modelSlice';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-const SearchBar = ({ width, height, optionalClassName, searchType,searchItem }) => {
+const SearchBar = ({ width, height, optionalClassName, searchType,searchItem,title }) => {
     const dispatch = useDispatch();
     const allProductsStore = useSelector((state) => state.products.allProducts);
     const allBrandsStore = useSelector((state) => state.brands.allbrands);
@@ -67,7 +67,7 @@ const SearchBar = ({ width, height, optionalClassName, searchType,searchItem }) 
                     required type="text"
                     className={`text-black peer outline-none ${optionalClassName} ${width} ${height} pt-2 px-2 text-base`} />
                 <AiOutlineSearch className='absolute left-1 text-gray-600 transition-all text-base top-1/2 -translate-y-1/2 peer-focus:text-xs  peer-focus:top-2 peer-valid:text-xs  peer-valid:top-2' />
-                <span className=" cursor-text text-gray-600 absolute left-6 transition-all text-base top-1/2 -translate-y-1/2  peer-focus:text-xs peer-focus:top-2 peer-valid:text-xs  peer-valid:top-2">Search</span>
+                <span className=" cursor-text text-gray-600 absolute left-6 transition-all text-base top-1/2 -translate-y-1/2  peer-focus:text-xs peer-focus:top-2 peer-valid:text-xs  peer-valid:top-2">{title}</span>
             </div>
         </label>
     )
@@ -78,7 +78,8 @@ SearchBar.propTypes = {
     height: PropTypes.string,
     optionalClassName: PropTypes.string,
     searchType: PropTypes.string,
-    searchItem: PropTypes.string
+    searchItem: PropTypes.string,
+    title: PropTypes.string
 }
 
 export default SearchBar

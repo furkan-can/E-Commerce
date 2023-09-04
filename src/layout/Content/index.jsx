@@ -1,5 +1,4 @@
-import { Card, RadioButton, Title, CheckButton, SearchBar, CartItem, Product, Pagination, Button, TotalPrice } from "@/components"
-import { sortOptions } from "@/utils/constant";
+import { Card, Title, CartItem, Product, Pagination, Button, TotalPrice, Filters } from "@/components"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
@@ -23,7 +22,6 @@ const Content = () => {
     async function fetchData() {
       try {
         const data = await fetchProductData();
-        console.log(data);
         if (data) {
           dispatch(setAllProducts(data));
           const brands = data.map((product) => {
@@ -55,12 +53,8 @@ const Content = () => {
 
 
   const allModelsStore = useSelector((state) => state.models.allmodels);
-  const isFilterActiveModel = useSelector((state) => state.models.isFilterActive);
-  const filteredModels = useSelector((state) => state.models.filteredmodels);
 
   const allBrandsStore = useSelector((state) => state.brands.allbrands);
-  const isFilterActiveBrand = useSelector((state) => state.brands.isFilterActive);
-  const filteredBrands = useSelector((state) => state.brands.filteredbrands);
 
   const allProductsStore = useSelector((state) => state.products.allProducts);
   const isFilterActiveProduct = useSelector((state) => state.products.isFilterActive);
@@ -105,29 +99,6 @@ const Content = () => {
     }
   };
 
-
-
-  const [selectedOption, setSelectedOption] = useState("");
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-    if (event.target.value === sortOptions[0].value) {
-      setCurrentProducts(currentProducts.slice().sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
-    }
-
-    if (event.target.value === sortOptions[3].value) {
-      setCurrentProducts(currentProducts.slice().sort((a, b) => a.price - b.price));
-    }
-    if (event.target.value === sortOptions[2].value) {
-      setCurrentProducts(currentProducts.slice().sort((a, b) => b.price - a.price));
-
-    }
-    if (event.target.value === sortOptions[1].value) {
-      setCurrentProducts(currentProducts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-    }
-
-  };
-
   const [brandsCheckButtonsChecked, setBrandsCheckButtonsChecked] = useState({});
   const [brandsCount, setBrandsCount] = useState(0);
 
@@ -157,14 +128,6 @@ const Content = () => {
   const getFilteredProductsByBrands = () => {
     const selectedBrands = Object.keys(brandsCheckButtonsChecked).filter((brandName) => brandsCheckButtonsChecked[brandName]);
     return allProductsStore.filter((product) => selectedBrands.includes(product.brand));
-  };
-
-  const handleBrandsCheckButtonChange = (event) => {
-    const { name, checked } = event.target;
-    setBrandsCheckButtonsChecked((prevCheckButtons) => ({
-      ...prevCheckButtons,
-      [name]: checked,
-    }));
   };
 
   const [modelsCheckButtonsChecked, setModelsCheckButtonsChecked] = useState({});
@@ -198,96 +161,16 @@ const Content = () => {
     return allProductsStore.filter((product) => selectedModels.includes(product.model));
   };
 
-  const handleModelsCheckButtonChange = (event) => {
-    const { name, checked } = event.target;
-    setModelsCheckButtonsChecked((prevCheckButtons) => ({
-      ...prevCheckButtons,
-      [name]: checked,
-    }));
-  };
-
   return (
-    <div className="grid grid-cols-5 h-screen2 px-60 pt-8 bg-gray-100">
-      <div className="col-span-1 flex flex-col gap-5">
-        <div>
-          <Title title="Sort by" />
-          <Card height={"h-40"} width={"w-60"}>
-            {
-              sortOptions.map((option, index) => (
-                <RadioButton
-                  key={index}
-                  option={option.value}
-                  text={option.label}
-                  selectedOption={selectedOption}
-                  onChange={handleOptionChange}
-                />
-              ))
-            }
-          </Card>
-        </div>
-        <div>
-          <Title title="Brands" />
-          <Card height={"h-40"} width={"w-60"}>
-            <SearchBar searchType={"brand"} height={"h-10"} optionalClassName={"bg-gray-50"} />
-            {
-              isFilterActiveBrand ? filteredBrands.map((brand, index) => (
-                <CheckButton
-                  key={index}
-                  text={brand.text}
-                  name={brand.name}
-                  value={brandsCheckButtonsChecked[brand.name]}
-                  checked={brandsCheckButtonsChecked[brand.name] || false}
-                  onChange={(e) => handleBrandsCheckButtonChange(e)}
-                />
-
-              )) :
-                allBrandsStore.map((brand, index) => (
-                  <CheckButton
-                    key={index}
-                    text={brand.text}
-                    name={brand.name}
-                    value={brandsCheckButtonsChecked[brand.name]}
-                    checked={brandsCheckButtonsChecked[brand.name] || false}
-                    onChange={(e) => handleBrandsCheckButtonChange(e)}
-                  />
-                ))
-            }
-          </Card>
-        </div>
-        <div>
-          <Title title="Model" />
-          <Card height={"h-40"} width={"w-60"}>
-            <SearchBar searchType={"model"} height={"h-10"} optionalClassName={"bg-gray-50"} />
-            {
-              isFilterActiveModel ? filteredModels.map((model, index) => (
-                <CheckButton
-                  key={index}
-                  text={model.text}
-                  name={model.name}
-                  value={modelsCheckButtonsChecked[model.name]}
-                  checked={modelsCheckButtonsChecked[model.name] || false}
-                  onChange={(e) => handleModelsCheckButtonChange(e)}
-                />
-              )) :
-                allModelsStore.map((model, index) => (
-                  <CheckButton
-                    key={index}
-                    text={model.text}
-                    name={model.name}
-                    value={modelsCheckButtonsChecked[model.name]}
-                    checked={modelsCheckButtonsChecked[model.name] || false}
-                    onChange={(e) => handleModelsCheckButtonChange(e)}
-                  />
-                ))
-            }
-          </Card>
-        </div>
+    <div className="flex flex-col xl:grid xl:grid-cols-5 h-full md:px-6  xl:px-3 xl:pt-0 2xl:pt-8 2xl:px-60 bg-gray-100">
+      <div className="hidden col-span-1 xl:flex flex-col gap-5">
+        <Filters />
       </div>
       <div className="col-span-3 relative">
-        <div className="flex flex-wrap -mx-2 gap-y-5">
+        <div className="flex flex-wrap xl:-mx-2 gap-y-5">
           {
             isFilterActiveProduct ? filteredProducts.map((product, index) => (
-              <div onClick={() => handleProductClick(product.id)} className="w-1/4 px-2 cursor-pointer" key={index}>
+              <div onClick={() => handleProductClick(product.id)} className="w-1/2 xl:w-1/4 md:w-1/3 px-2 cursor-pointer" key={index}>
                 <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
                   <Product
                     url={product.image}
@@ -298,7 +181,7 @@ const Content = () => {
                 </div>
               </div>
             )) : currentProducts.map((product, index) => (
-              <div onClick={() => handleProductClick(product.id)} className="w-1/4 px-2 cursor-pointer" key={index}>
+              <div onClick={() => handleProductClick(product.id)} className="w-1/2 xl:w-1/4 md:w-1/3 px-2 cursor-pointer" key={index}>
                 <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
                   <Product
                     url={product.image}
@@ -311,7 +194,7 @@ const Content = () => {
             ))
           }
         </div>
-        <div className="col-span-3 flex left-1/2 -translate-x-1/2 h-5 items-center absolute bottom-10">
+        <div className="col-span-3 flex left-1/2 -translate-x-1/2 h-5 items-center absolute xl:bottom-5 2xl:bottom-10 -bottom-10">
           <Pagination
             currentPage={currentPage}
             totalPageCount={totalPageCount}
@@ -321,7 +204,7 @@ const Content = () => {
           />
         </div>
       </div>
-      <div className="col-span-1 flex flex-col gap-5 ml-4">
+      <div className="col-span-1 flex flex-col gap-5 xl:ml-1 2xl:ml-4 mt-10  xl:mt-0 xl:py-0 py-5">
         <div>
           <Title title="Cart" />
           <Card height={"h-36"} width={"w-64"}>

@@ -8,7 +8,7 @@ const Home = () => {
   // const dispatch = useDispatch();
 
   return (
-    <>
+    <div className="xl:h-screen2 h-full">
       <Header />
       <Content />
       {/* <Button text={"Go About Page (Control Redux-Toolkit)"} onClick={() => navigate("/about")} /> */}
@@ -22,7 +22,7 @@ const Home = () => {
         <Button text={"Decrement"} onClick={() => dispatch(decrement())} />
       </div> */}
 
-    </>
+    </div>
   )
 }
 

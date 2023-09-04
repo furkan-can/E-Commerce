@@ -30,7 +30,7 @@ const CartItem = ({ title, price, quantity, id }) => {
 }
 
 CartItem.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
   quantity: PropTypes.number.isRequired,
