@@ -83,7 +83,7 @@ const Content = () => {
   }, [currentPage, allProductsStore, filteredProducts]);
 
 
-  let totalPageCount = Math.ceil(allProductsStore.length / productsPerPage);
+  let totalPageCount = Math.ceil((filteredProducts.length > 0 ? filteredProducts.length : allProductsStore.length) / productsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
