@@ -11,11 +11,11 @@ const productSlice = createSlice({
     },
     setFilteredProducts: (state, action) => {
       state.filteredProducts = action.payload;
-      state.isFilterActive = true; // Filtre etkinleştirildi
+      state.isFilterActive = true; 
     },
     clearFilterProduct: (state) => {
       state.filteredProducts = [];
-      state.isFilterActive = false; // Filtre devre dışı bırakıldı
+      state.isFilterActive = false; 
     },
   },
 });

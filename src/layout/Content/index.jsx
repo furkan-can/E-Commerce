@@ -57,7 +57,6 @@ const Content = () => {
   const allBrandsStore = useSelector((state) => state.brands.allbrands);
 
   const allProductsStore = useSelector((state) => state.products.allProducts);
-  const isFilterActiveProduct = useSelector((state) => state.products.isFilterActive);
   const filteredProducts = useSelector((state) => state.products.filteredProducts);
   const productsInCart = useSelector(state => state.cart.productsInCart);
   const dispatch = useDispatch();
@@ -79,8 +78,9 @@ const Content = () => {
   const [currentProducts, setCurrentProducts] = useState([]);
 
   useEffect(() => {
-    setCurrentProducts(paginate(allProductsStore, currentPage, productsPerPage));
-  }, [currentPage, allProductsStore]);
+    let itemsToPaginate = filteredProducts.length > 0 ? filteredProducts : allProductsStore;
+    setCurrentProducts(paginate(itemsToPaginate, currentPage, productsPerPage));
+  }, [currentPage, allProductsStore, filteredProducts]);
 
 
   let totalPageCount = Math.ceil(allProductsStore.length / productsPerPage);
@@ -169,18 +169,7 @@ const Content = () => {
       <div className="col-span-3 relative">
         <div className="flex flex-wrap xl:-mx-2 gap-y-5">
           {
-            isFilterActiveProduct ? filteredProducts.map((product, index) => (
-              <div onClick={() => handleProductClick(product.id)} className="w-1/2 xl:w-1/4 md:w-1/3 px-2 cursor-pointer" key={index}>
-                <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
-                  <Product
-                    url={product.image}
-                    price={product.price}
-                    title={product.name}
-                  />
-                  <Button title={"Add to Cart"} handleClick={(e) => handleAddToCart(e, product.id)} />
-                </div>
-              </div>
-            )) : currentProducts.map((product, index) => (
+            currentProducts.map((product, index) => (
               <div onClick={() => handleProductClick(product.id)} className="w-1/2 xl:w-1/4 md:w-1/3 px-2 cursor-pointer" key={index}>
                 <div className="bg-white flex flex-col gap-2 w-44 h-min p-3">
                   <Product
